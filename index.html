@@ -371,6 +371,37 @@
             </div>
 
             <div class="form-group">
+                <label for="duration">课时安排</label>
+                <select id="duration" name="duration">
+                    <option value="1课时">1课时 (45分钟)</option>
+                    <option value="2课时">2课时 (90分钟)</option>
+                    <option value="单元课程">单元课程 (多课时)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="teaching_method">教学方法</label>
+                <select id="teaching_method" name="teaching_method">
+                    <option value="讲授法">讲授法</option>
+                    <option value="讨论法">讨论法</option>
+                    <option value="实验法">实验法</option>
+                    <option value="案例教学法">案例教学法</option>
+                    <option value="项目式学习">项目式学习</option>
+                    <option value="翻转课堂">翻转课堂</option>
+                    <option value="混合式教学">混合式教学</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="class_size">班级规模</label>
+                <select id="class_size" name="class_size">
+                    <option value="小班 (20人以下)">小班 (20人以下)</option>
+                    <option value="中班 (20-40人)">中班 (20-40人)</option>
+                    <option value="大班 (40人以上)">大班 (40人以上)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label for="num_slides">幻灯片数量：<span class="slider-value" id="slideValue">6</span> 页</label>
                 <div class="slider-container">
                     <input type="range" id="num_slides" name="num_slides" min="3" max="15" value="6" oninput="updateSliderValue(this.value)">
@@ -384,22 +415,22 @@
         </form>
 
         <div class="examples">
-            <h3>💡 示例主题（点击快速填充）</h3>
-            <div class="example-item" onclick="fillExample('小学三年级', '数学', '分数的认识与加减法')">
-                <strong>小学数学</strong>
-                <span>分数的认识与加减法</span>
+            <h3>💡 教案示例（点击快速填充）</h3>
+            <div class="example-item" onclick="fillCompleteExample('小学三年级', '数学', '分数的认识与加减法', '1课时', '讲授法', '中班 (20-40人)')">
+                <strong>小学数学教案</strong>
+                <span>分数的认识与加减法 - 适合中班规模，采用讲授法教学</span>
             </div>
-            <div class="example-item" onclick="fillExample('初中二年级', '物理', '牛顿第一定律与惯性')">
-                <strong>初中物理</strong>
-                <span>牛顿第一定律与惯性</span>
+            <div class="example-item" onclick="fillCompleteExample('初中二年级', '物理', '牛顿第一定律与惯性', '1课时', '实验法', '中班 (20-40人)')">
+                <strong>初中物理教案</strong>
+                <span>牛顿第一定律与惯性 - 实验教学法，培养科学探究能力</span>
             </div>
-            <div class="example-item" onclick="fillExample('高中一年级', '英语', '英语时态详解：现在完成时')">
-                <strong>高中英语</strong>
-                <span>英语时态详解：现在完成时</span>
+            <div class="example-item" onclick="fillCompleteExample('高中一年级', '英语', '英语时态详解：现在完成时', '2课时', '讨论法', '中班 (20-40人)')">
+                <strong>高中英语教案</strong>
+                <span>现在完成时 - 讨论式教学，提高语言运用能力</span>
             </div>
-            <div class="example-item" onclick="fillExample('', '信息技术', 'Python编程基础：变量与数据类型')">
-                <strong>编程教学</strong>
-                <span>Python编程基础：变量与数据类型</span>
+            <div class="example-item" onclick="fillCompleteExample('', '信息技术', 'Python编程基础：变量与数据类型', '2课时', '项目式学习', '小班 (20人以下)')">
+                <strong>编程教学教案</strong>
+                <span>Python基础 - 项目式学习，适合小班精细化教学</span>
             </div>
         </div>
 
@@ -417,6 +448,16 @@
             document.getElementById('grade').value = grade;
             document.getElementById('subject').value = subject;
             document.getElementById('topic').value = topic;
+            document.getElementById('topic').focus();
+        }
+
+        function fillCompleteExample(grade, subject, topic, duration, teaching_method, class_size) {
+            document.getElementById('grade').value = grade;
+            document.getElementById('subject').value = subject;
+            document.getElementById('topic').value = topic;
+            document.getElementById('duration').value = duration;
+            document.getElementById('teaching_method').value = teaching_method;
+            document.getElementById('class_size').value = class_size;
             document.getElementById('topic').focus();
         }
 
@@ -440,6 +481,9 @@
                 grade: document.getElementById('grade').value,
                 subject: document.getElementById('subject').value,
                 topic: document.getElementById('topic').value,
+                duration: document.getElementById('duration').value,
+                teaching_method: document.getElementById('teaching_method').value,
+                class_size: document.getElementById('class_size').value,
                 num_slides: document.getElementById('num_slides').value
             };
 
