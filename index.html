@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI教案PPT生成器</title>
+    <link rel="stylesheet" href="/deploy/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header .icon {
+            font-size: 40px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 5px;
+            background: #e0e0e0;
+            outline: none;
+        }
+
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .btn.loading .spinner {
+            display: block;
+        }
+
+        .btn.loading .btn-text {
+            display: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-link:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .examples {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .examples h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .example-item {
+            background: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .example-item:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .example-item strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .example-item span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span class="icon">🎯</span>
+                AI教案PPT生成器
+            </h1>
+            <p>输入教学主题，AI自动生成专业教案PPT</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="pptForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="grade">年级</label>
+                    <select id="grade" name="grade">
+                        <option value="">请选择</option>
+                        <option value="小学一年级">小学一年级</option>
+                        <option value="小学二年级">小学二年级</option>
+                        <option value="小学三年级">小学三年级</option>
+                        <option value="小学四年级">小学四年级</option>
+                        <option value="小学五年级">小学五年级</option>
+                        <option value="小学六年级">小学六年级</option>
+                        <option value="初中一年级">初中一年级</option>
+                        <option value="初中二年级">初中二年级</option>
+                        <option value="初中三年级">初中三年级</option>
+                        <option value="高中一年级">高中一年级</option>
+                        <option value="高中二年级">高中二年级</option>
+                        <option value="高中三年级">高中三年级</option>
+                        <option value="大学">大学</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="subject">学科</label>
+                    <select id="subject" name="subject">
+                        <option value="通用">通用</option>
+                        <option value="语文">语文</option>
+                        <option value="数学">数学</option>
+                        <option value="英语">英语</option>
+                        <option value="物理">物理</option>
+                        <option value="化学">化学</option>
+                        <option value="生物">生物</option>
+                        <option value="历史">历史</option>
+                        <option value="地理">地理</option>
+                        <option value="政治">政治</option>
+                        <option value="信息技术">信息技术</option>
+                        <option value="音乐">音乐</option>
+                        <option value="美术">美术</option>
+                        <option value="体育">体育</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="topic">教案主题 *</label>
+                <textarea id="topic" name="topic" placeholder="例如：分数的加减法、古诗词鉴赏、牛顿第一定律..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="num_slides">幻灯片数量：<span class="slider-value" id="slideValue">6</span> 页</label>
+                <div class="slider-container">
+                    <input type="range" id="num_slides" name="num_slides" min="3" max="15" value="6" oninput="updateSliderValue(this.value)">
+                </div>
+            </div>
+
+            <button type="submit" class="btn" id="submitBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">🚀 生成PPT</span>
+            </button>
+        </form>
+
+        <div class="examples">
+            <h3>💡 示例主题（点击快速填充）</h3>
+            <div class="example-item" onclick="fillExample('小学三年级', '数学', '分数的认识与加减法')">
+                <strong>小学数学</strong>
+                <span>分数的认识与加减法</span>
+            </div>
+            <div class="example-item" onclick="fillExample('初中二年级', '物理', '牛顿第一定律与惯性')">
+                <strong>初中物理</strong>
+                <span>牛顿第一定律与惯性</span>
+            </div>
+            <div class="example-item" onclick="fillExample('高中一年级', '英语', '英语时态详解：现在完成时')">
+                <strong>高中英语</strong>
+                <span>英语时态详解：现在完成时</span>
+            </div>
+            <div class="example-item" onclick="fillExample('', '信息技术', 'Python编程基础：变量与数据类型')">
+                <strong>编程教学</strong>
+                <span>Python编程基础：变量与数据类型</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            Powered by 智谱AI GLM-4 | © 2025
+        </div>
+    </div>
+
+    <script>
+        function updateSliderValue(value) {
+            document.getElementById('slideValue').textContent = value;
+        }
+
+        function fillExample(grade, subject, topic) {
+            document.getElementById('grade').value = grade;
+            document.getElementById('subject').value = subject;
+            document.getElementById('topic').value = topic;
+            document.getElementById('topic').focus();
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.className = `alert ${type} show`;
+            alert.innerHTML = message;
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                }, 10000);
+            }
+        }
+
+        document.getElementById('pptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const formData = {
+                grade: document.getElementById('grade').value,
+                subject: document.getElementById('subject').value,
+                topic: document.getElementById('topic').value,
+                num_slides: document.getElementById('num_slides').value
+            };
+
+            // 验证
+            if (!formData.topic.trim()) {
+                showAlert('请输入教案主题', 'error');
+                return;
+            }
+
+            // 显示加载状态
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(
+                        `✅ ${result.message}<br>` +
+                        `<a href="${result.download_url}" class="download-link" download>📥 点击下载PPT</a>`,
+                        'success'
+                    );
+                } else {
+                    showAlert(`❌ ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ 生成失败: ${error.message}`, 'error');
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
